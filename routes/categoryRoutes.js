@@ -3,7 +3,7 @@ const {
   verifyToken,
   verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
-} = require("../verifyToken");
+} = require("../middlewares/verifyToken");
 
 const {
     createCategory,

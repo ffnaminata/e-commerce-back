@@ -3,7 +3,7 @@ const Order = require("../models/Order");
 // CREATE
 exports.createOrder = async (req, res) => {
   const newOrder = new Order(req.body);
-
+  console.log(newOrder);
   try {
     const savedOrder = await newOrder.save();
     res.status(200).json(savedOrder);
@@ -38,6 +38,17 @@ exports.deleteOrder = async (req, res) => {
   }
 };
 
+// GET ORDER BY ID
+exports.getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    res.status(200).json(order);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+
 // GET USER ORDERS
 exports.getUserOrders = async (req, res) => {
   try {
@@ -53,6 +64,30 @@ exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find();
     res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+// GET POPULAR PRODUCTS OF THE MONTH
+exports.getPopularProducts = async (req, res) => {
+  const date = new Date();
+  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const popularProducts = await Order.aggregate([
+      { $match: { createdAt: { $gte: lastMonth } } },
+      { $unwind: "$products" },
+      {
+        $group: {
+          _id: "$products.productId",
+          total: { $sum: "$products.quantity" },
+        },
+      },
+      { $sort: { total: -1 } },
+      { $limit: 5 }
+    ]);
+    res.status(200).json(popularProducts);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -86,30 +121,6 @@ exports.getMonthlyIncome = async (req, res) => {
   }
 };
 
-// GET POPULAR PRODUCTS OF THE MONTH
-exports.getPopularProducts = async (req, res) => {
-  const date = new Date();
-  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
-
-  try {
-    const popularProducts = await Order.aggregate([
-      { $match: { createdAt: { $gte: lastMonth } } },
-      { $unwind: "$products" },
-      {
-        $group: {
-          _id: "$products.productId",
-          total: { $sum: "$products.quantity" },
-        },
-      },
-      { $sort: { total: -1 } },
-      { $limit: 5 }
-    ]);
-    res.status(200).json(popularProducts);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-};
-
 // GET MONTHLY ORDER COUNT
 exports.getMonthlyOrderCount = async (req, res) => {
   const date = new Date();
@@ -137,3 +148,33 @@ exports.getMonthlyOrderCount = async (req, res) => {
   }
 };
 
+//GET TOTAL INCOME
+exports.getTotalIncome = async (req, res) => {
+  try {
+    const totalIncome = await Order.aggregate([
+      {
+        $group: {
+          _id: null, // Utilisation de null pour grouper tous les documents
+          total: { $sum: "$amount" }
+        }
+      }
+    ]);
+
+    // Pour obtenir un seul chiffre au lieu d'un tableau avec un document
+    const total = totalIncome.length > 0 ? totalIncome[0].total : 0;
+    res.status(200).json({ totalIncome: total });
+  } catch (err) {
+    res.status(500).json({ message: "An error occurred while fetching the total income", error: err });
+  }
+};
+
+//GET TOTAL ORDER COUNT
+exports.getTotalOrderCount = async (req, res) => {
+  try {
+    const totalOrderCount = await Order.countDocuments();
+
+    res.status(200).json({ totalOrderCount });
+  } catch (err) {
+    res.status(500).json({ message: "An error occurred while fetching the total order count", error: err });
+  }
+};

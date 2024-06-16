@@ -3,7 +3,7 @@ const {
   verifyToken,
   verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
-} = require("../verifyToken");
+} = require("../middlewares/verifyToken");
 
 const {
   updatedUser,
@@ -13,7 +13,7 @@ const {
 } = require("../controllers/userController");
 
 //UPDATE
-router.put("/:id", verifyTokenAndAuthorization, updatedUser);
+router.put("/:userId", updatedUser);
 
 //DELETE
 router.delete("/:id", verifyTokenAndAuthorization, deleteUser);

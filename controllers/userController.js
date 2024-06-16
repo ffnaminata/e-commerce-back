@@ -12,7 +12,7 @@ exports.updatedUser = async (req, res) => {
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
+      req.params.userId,
       {
         $set: req.body,
       },

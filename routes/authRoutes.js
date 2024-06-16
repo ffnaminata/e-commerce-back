@@ -1,13 +1,10 @@
 const router = require("express").Router();
-const {
-  verifyToken,
-  verifyTokenAndAuthorization,
-  verifyTokenAndAdmin,
-} = require("../verifyToken");
 
 const {
   register,
   validateEmail,
+  forgotPassword,
+  resetPassword,
   login,
 } = require("../controllers/authController");
 
@@ -15,9 +12,16 @@ const {
 router.post("/register", register);
 
 //VALIDATE EMAIL
-router.get('/validate-email', validateEmail);
+router.get("/validate-email", validateEmail);
+
+//FORGOT PASSWORD
+router.post("/forgot-password", forgotPassword);
+
+//RESET PASSWORD
+router.post("/reset-password", resetPassword);
 
 //LOGIN
-router.post('/login', login);
+router.post("/login", login);
+
 
 module.exports = router;

@@ -8,8 +8,8 @@ const productRoutes = require("./routes/productRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
-const mailerRoutes = require('./routes/mailerRoutes');
 const stripeRoutes = require("./routes/stripeRoutes");
+
 const cors = require("cors");
 
 dotenv.config();
@@ -29,8 +29,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/mailer", mailerRoutes);
-//app.use("/api/checkout", stripeRoute);
+app.use("/api/checkout", stripeRoutes);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log("Backend server is running!");

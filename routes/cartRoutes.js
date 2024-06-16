@@ -3,27 +3,37 @@ const {
   verifyToken,
   verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
-} = require("../verifyToken");
+} = require("../middlewares/verifyToken");
 
 const {
-  createCart,
-  updatedCart,
+  addToCart,
+  removeFromCart,
+  decrementProductQuantity,
+  incrementProductQuantity,
+  getCartSummary,
   deleteCart,
   getUserCart,
   getAllCarts,
 } = require("../controllers/cartController");
 
 
-//CREATE
-router.post("/", verifyToken, createCart);
+//ADD TO CART 
+router.put('/:userId', addToCart);
 
-//UPDATE
-router.put("/:id", verifyTokenAndAuthorization, updatedCart);
+//REMOVE FROM CART
+router.delete('/:userId/:productId', verifyTokenAndAuthorization, removeFromCart);
+
+//INCREMENT
+router.patch('/:userId/:productId/increment', incrementProductQuantity);
+
+//DECREMENT 
+router.patch('/:userId/:productId/decrement', decrementProductQuantity);
+
+//SUMMARY
+router.get('/:userId', verifyTokenAndAuthorization, getCartSummary);
 
 //DELETE
 router.delete("/:id", verifyTokenAndAuthorization, deleteCart);
-
-//DELETE A PRODUCT OF CART 
 
 //GET USER CART
 router.get("/find/:userId", verifyTokenAndAuthorization, getUserCart);

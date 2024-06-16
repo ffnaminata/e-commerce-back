@@ -1,46 +1,33 @@
 
 const router = require("express").Router();
-const stripe = require("stripe")(process.env.STRIPE_KEY);
+const Stripe = require("stripe")
 
-router.post("/payment", (req, res) => {
-  stripe.charges.create(
-    {
-      source: req.body.tokenId,
-      amount: req.body.amount,
-      currency: "usd",
-    },
-    (stripeErr, stripeRes) => {
-      if (stripeErr) {
-        res.status(500).json(stripeErr);
-      } else {
-        res.status(200).json(stripeRes);
-      }
-    }
-  );
+require('dotenv').config();
+
+const stripe = Stripe('sk_test_51PKo3M097Htwic2go0imvKbmisaJA3rj2uIR9Yumvi1t7nprNpvPGkoK94QCiKCAVFBmiIuwFZewxXfQvgpfdyU300ENgbhq3K');
+
+require("dotenv").config();
+
+router.post('/create-checkout-session', async (req, res) => {
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: 'Le montant de votre commande est de :',
+          },
+          unit_amount: req.body.price_data_amount,
+        },
+        quantity: 1,
+      },
+    ],
+    mode: 'payment',
+    success_url: 'http://localhost:8080/success/',
+    cancel_url: 'http://localhost:8080/cancel',
+  });
+
+  res.send({url: session.url});
 });
 
 module.exports = router;
-
-
-// const router = express.Router();
-// const stripe = require("stripe")(process.env.STRIPE_KEY);
-
-// // Route pour créer un Payment Intent
-// router.post('/create-payment-intent', async (req, res) => {
-//   const { amount } = req.body;
-
-//   try {
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount,
-//       currency: 'usd',
-//     });
-
-//     res.status(200).json({
-//       clientSecret: paymentIntent.client_secret,
-//     });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-// module.exports = router;

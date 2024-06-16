@@ -4,14 +4,19 @@ const ProductSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, unique: true },
     desc: { type: String, required: true },
-    img: { type: String, required: true },
-    categories: [
-      { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Category', 
-        required: false 
-      }
-    ], 
+    img: {
+      type: [{ type: String }],
+      required: true
+    },
+    // categories: {
+    //   type : [
+    //     { 
+    //       type: mongoose.Schema.Types.ObjectId, 
+    //       ref: 'Category', 
+    //       required: false 
+    //     }
+    //   ]
+    // }, 
     size: { type: String, default: "standard" },
     color: { type: String, default: "neutre" },
     price: { type: Number, required: true },
